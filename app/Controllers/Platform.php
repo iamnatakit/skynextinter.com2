@@ -84,7 +84,7 @@ class Platform extends BaseController
         if ($id !== null) {
             $p = $this->store->one('SELECT * FROM products WHERE id=? AND active=1', [(int)$id]);
             if (!$p) { throw PageNotFoundException::forPageNotFound(); }
-            $images = $this->store->one("SELECT name FROM sqlite_master WHERE type='table' AND name='product_images'")
+            $images = $this->store->tableExists('product_images')
                 ? $this->store->all('SELECT image,alt FROM product_images WHERE product_id=? ORDER BY sort_order,id', [(int)$id]) : [];
             return $this->page('product', ['product' => $p, 'images' => $images, 'title' => $p['name']]);
         }
@@ -122,8 +122,27 @@ class Platform extends BaseController
                 if ($quantity === 0) { unset($cart[$id]); } else { $cart[$id] = $quantity; }
                 if (count($cart) > 50) { throw new RuntimeException('ตะกร้ามีสินค้ามากเกินไป'); }
                 session()->set('cart', $cart);
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON([
+                        'status' => 'ok',
+                        'message' => 'อัปเดตตะกร้าแล้ว',
+                        'cart_count' => array_sum($cart),
+                        'csrf' => csrf_hash(),
+                        'csrf_name' => csrf_token(),
+                    ]);
+                }
                 return redirect()->to(site_url('cart'))->with('success','อัปเดตตะกร้าแล้ว');
-            } catch (Throwable $e) { return $this->fail($e,'cart'); }
+            } catch (Throwable $e) {
+                if ($this->request->isAJAX()) {
+                    return $this->response->setStatusCode(422)->setJSON([
+                        'status' => 'error',
+                        'message' => $e->getMessage(),
+                        'csrf' => csrf_hash(),
+                        'csrf_name' => csrf_token(),
+                    ]);
+                }
+                return $this->fail($e,'cart');
+            }
         }
         $items = [];
         foreach ($cart as $id => $qty) {

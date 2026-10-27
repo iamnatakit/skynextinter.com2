@@ -26,11 +26,20 @@ The project root blocks HTTP access to private source files and `.env`.
 For a virtual host, point its document root at `public/` and update
 `app.baseURL` in `.env` to match. Configure PHP's `upload_tmp_dir` to a
 writable private folder when using file uploads.
-This implementation uses PDO SQLite, already available in local PHP, at
-`writable/platform.sqlite`. It does not require the MySQL service. The schema and
-idempotent upgrade logic run through `platform:install`. For tests only,
-`PLATFORM_DB_PATH` can select a separate database. All stored timestamps are UTC;
-the interface displays Bangkok time. Prices are integer satang.
+The commerce platform uses MySQL/MariaDB through PDO MySQL. Configure
+`PLATFORM_DB_DRIVER`, `PLATFORM_DB_HOST`, `PLATFORM_DB_PORT`, `PLATFORM_DB_NAME`,
+`PLATFORM_DB_USER`, and `PLATFORM_DB_PASSWORD` in the private `.env` file before
+running `php spark platform:install`. Keep the credentials out of source control.
+For automated tests, `new Store(':memory:')` continues to use SQLite.
+`PLATFORM_DB_PATH` is only used when explicitly selecting the SQLite driver.
+All stored timestamps are UTC; the interface displays Bangkok time. Prices are
+integer satang.
+
+To transfer an existing SQLite commerce database, set the MySQL connection
+values in `.env`, then run `php spark platform:migrate-mysql`. The command backs
+up the SQLite file, refuses to overwrite a populated MySQL database, and checks
+table row counts after copying. Leave the SQLite file intact until the migrated
+site has been verified.
 
 ## Implemented workflows
 

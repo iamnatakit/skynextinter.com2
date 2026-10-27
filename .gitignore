@@ -147,3 +147,4 @@ _modules/*
 /tools/complete_mirror.py
 /tools/validate_mirror.py
 /tools/__pycache__/
+/node_modules/

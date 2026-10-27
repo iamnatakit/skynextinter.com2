@@ -1,0 +1,10 @@
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+@theme {
+  --color-brand-forest: #165b43;
+  --color-brand-gold: #d5ad58;
+}
+
+@source "../../app/Views/**/*.php";
+@source "../../public/platform/**/*.js";

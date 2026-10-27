@@ -10,7 +10,7 @@ class PlatformInstall extends BaseCommand
 {
     protected $group = 'Platform';
     protected $name = 'platform:install';
-    protected $description = 'Create the local platform database and first administrator; import captured products.';
+    protected $description = 'Create the platform database and first administrator; import captured products.';
     public function run(array $params)
     {
         $store = new Store(); $store->install();

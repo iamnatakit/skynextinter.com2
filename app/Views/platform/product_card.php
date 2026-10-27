@@ -35,7 +35,7 @@ $publicPricing=\App\Libraries\Platform\ProductPricing::apply($product,false);
                 <?php elseif ($isInquiry): ?>
                 <a class="sn-product-button" href="<?= p_affiliate_contact_url() ?>"><?= esc(($product['inquiry_label'] ?? '') ?: 'สอบถามสูตรและการใช้งาน') ?></a>
                 <?php elseif ($product['stock'] > 0): ?>
-                <form method="post" action="<?= site_url('cart') ?>">
+                <form method="post" action="<?= site_url('cart') ?>" data-sn-cart>
                     <?= csrf_field() ?><input type="hidden" name="product_id" value="<?= $product['id'] ?>"><input type="hidden" name="quantity" value="1"><input type="hidden" name="mode" value="add"><button class="sn-product-button">ใส่ตะกร้า</button>
                 </form>
                 <?php endif ?>
